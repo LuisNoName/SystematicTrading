@@ -14,8 +14,8 @@ import backtrader.feeds as btfeeds
 # Create a Stratey
 class TestStrategy(bt.Strategy):
     params = (
-        ('maperiod', 20),
-        ('printlog', True),
+        ('maperiod', 16),
+        ('printlog', False),
     )
 
     def log(self, txt, dt=None, doprint=False):
@@ -115,13 +115,13 @@ if __name__ == '__main__':
 
     # Add a strategy
     #strats = cerebro.optstrategy(
-    #   TestStrategy,
-    #    maperiod=range(10, 31))
+    #  TestStrategy,
+    #   maperiod=range(10, 31))
 
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
 
-    outname = '{}.csv'.format('AAPL')
+    outname = '{}.csv'.format('DHER.DE')
     outdir = './data/market'
     outdir = os.path.join(outdir, outname)
     datapath = os.path.join(os.path.dirname(os.getcwd()), outdir)
@@ -133,8 +133,8 @@ if __name__ == '__main__':
     data = btfeeds.GenericCSVData(
                 dataname=datapath,
 
-                fromdate=datetime.datetime(2021, 1, 1),
-                todate=datetime.datetime(2022, 1, 1),
+                fromdate=datetime.datetime(2018, 1, 1),
+                todate=datetime.datetime(2022, 10, 10),
 
                 nullvalue=0.0,
 
@@ -151,17 +151,19 @@ if __name__ == '__main__':
 
     # Add the Data Feed to Cerebro
     cerebro.adddata(data)
-    cerebro.addwriter(bt.WriterFile, csv=False)
+    #cerebro.addwriter(bt.WriterFile, csv=False)
 
     # Set our desired cash start
-    cerebro.broker.setcash(100000.0)
+    cerebro.broker.setcash(20000.0)
 
     # Add a FixedSize sizer according to the stake
-    cerebro.addsizer(bt.sizers.FixedSize, stake=10)
+    cerebro.addsizer(bt.sizers.PercentSizerInt, percents=95)
 
     # Set the commission
     cerebro.broker.setcommission(commission=0.001)
 
     # Run over everything
-    results = cerebro.run(maxcpus=1)
+    cerebro.run(maxcpus=1)
+
+    cerebro.plot()
 
